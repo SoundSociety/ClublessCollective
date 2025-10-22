@@ -112,7 +112,7 @@ export default function App() {
     <>
       <StickyHeader r={results} inputs={model} onSubmit={onSubmit} isDirty={isDirty} />
       {/* pt-36 leaves room for sticky header */}
-      <div className="max-w-6xl mx-auto p-4 md:p-6 pt-36 space-y-4">
+      <div className="max-w-6x1 mx-auto p-4 md:p-6 pt-[var(--header-h-mobile)] md:pt-[var(--header-h-desktop)] space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputsPanel inputs={draft} setInputs={(p) => setDraft(prev => ({ ...prev, ...p }))} />
           <ResultsPanel r={results} inputs={model} onReset={reset} />

@@ -10,7 +10,7 @@ export default function StickyHeader({
   return (
     <div className="fixed top-0 left-0 right-0 z-40">
       <div className="mx-auto max-w-6xl">
-        <div className="card m-4 md:m-6 p-4 md:p-5 border border-brand/30 bg-[rgba(10,10,18,0.85)] backdrop-blur rounded-2xl">
+        <div className="card m-3 md:m-6 p-4 md:p-5 border border-brand/30 bg-[rgba(10,10,18,0.85)] backdrop-blur rounded-2xl">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <h1 className="text-xl md:text-2xl font-semibold">Clubless Profit Calculator (MVP)</h1>

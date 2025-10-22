@@ -4,8 +4,17 @@
 
 /* ===== Brand variables (tweak these to match your site) ===== */
 :root{
-  --brand: #6ee7f9;          /* accent color for buttons etc. */
-  --brand-rgb: 110,231,249;  /* same as rgb for charts */
+  /* Primary brand color */
+  --brand: #8A2BE2; /* BlueViolet */
+  --brand-rgb: 138, 43, 226;
+
+  --accent: #7ED321; /* Neon Green */
+  --accent-rgb: 126, 211, 33;
+
+  /* Header heights used in App.tsx for padding-top */
+  --header-h-mobile: 128px;
+  --header-h-desktop: 140px;
+
   color-scheme: dark;
 }
 
@@ -31,3 +40,42 @@ html, body, #root { height: 100%; background: #0b0b12; color: #fff; }
 .text-brand { color: var(--brand); }
 .bg-brand { background-color: var(--brand); }
 .border-brand { border-color: var(--brand); }
+
+/* Range sliders — iOS & webkit */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(var(--brand-rgb), 0.35);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  margin-top: -8px; /* centers thumb on 6px track */
+  background: var(--brand);
+  border: 2px solid rgba(255,255,255,0.7);
+}
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(var(--brand-rgb), 0.35);
+}
+input[type="range"]::-moz-range-thumb {
+  height: 22px;
+  width: 22px;
+  border: 2px solid rgba(255,255,255,0.7);
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+/* Focus ring for accessibility */
+input[type="range"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--brand-rgb), 0.45);
+}

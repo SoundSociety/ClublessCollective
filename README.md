@@ -119,3 +119,5 @@ Includes a baseline scenario test (250 attendees, 75% drinkers, 50% eating, 5h, 
 - Billable staff margins shown; not double-subtracted from net revenue.
 ```
 
+
+

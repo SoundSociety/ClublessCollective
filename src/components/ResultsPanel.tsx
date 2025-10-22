@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import type { Inputs, Results } from '../types';
 import { fmt } from '../utils/currency';
 import TicketsDrinksFoodChart from './Chart';
 import KpiCard from './KpiCard';
 import PnlTable from './PnlTable';
-import confetti from 'canvas-confetti';
-import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { exportInvoicePDF } from '../utils/exportPDF';
 
 export default function ResultsPanel({
@@ -13,20 +11,6 @@ export default function ResultsPanel({
 }: {
   r: Results; inputs: Inputs; onReset: () => void;
 }) {
-  const [toast, setToast] = useState<string | null>(null);
-  const [lastArtist, setLastArtist] = useState<number>(r.artistEarnings);
-  const debouncedArtist = useDebouncedValue(r.artistEarnings, 400);
-
-  useEffect(() => {
-    const delta = debouncedArtist - lastArtist;
-    if (delta >= 50) {
-      confetti({ particleCount: 80, spread: 60, origin: { y: 0.3 } });
-      setToast(`🎉 Congrats! You could earn ${fmt(debouncedArtist)}`);
-      setTimeout(() => setToast(null), 3000);
-    }
-    if (debouncedArtist !== lastArtist) setLastArtist(debouncedArtist);
-  }, [debouncedArtist]);
-
   const copySummary = async () => {
     const lines = [
       'Clubless Profit Calculator (MVP) — Summary',
@@ -49,45 +33,11 @@ export default function ResultsPanel({
       `Artist Earnings: ${fmt(r.artistEarnings)}`,
       `Clubless Base: ${fmt(r.clublessBase)} | Bartender Margin: ${fmt(r.bartenderMargin)} | Security Margin: ${fmt(r.securityMargin)} | Clubless Total: ${fmt(r.clublessTotal)}`
     ].join('\n');
-    try {
-      await navigator.clipboard.writeText(lines);
-      setToast('Copied summary to clipboard.');
-      setTimeout(() => setToast(null), 2000);
-    } catch {
-      setToast('Copy failed. Select and copy manually.');
-      setTimeout(() => setToast(null), 2500);
-    }
+    try { await navigator.clipboard.writeText(lines); } catch {}
   };
 
   return (
     <div className="space-y-4">
-      {/* Sticky top header with Potential Earnings */}
-      <div className="sticky top-0 z-40">
-        <div className="card p-4 md:p-5 border border-brand-accent/30 bg-[rgba(10,10,18,0.8)] backdrop-blur">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-xl md:text-2xl font-semibold">Clubless Profit Calculator (MVP)</h1>
-              <p className="text-white/70 text-sm">Test your event idea and see potential earnings in seconds.</p>
-              <p className="text-white/60 text-xs mt-1">
-                Max Occ: <span className="font-medium">{inputs.maxOccupancy}</span> •
-                Expected Att.: <span className="font-medium">{inputs.attendancePercent}%</span> •
-                Derived Attendees: <span className="font-medium">{r.attendees}</span>
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-xs text-white/70">Potential Earnings (Artist)</div>
-              <div className="text-3xl md:text-4xl font-bold mt-1">{fmt(r.artistEarnings)}</div>
-            </div>
-          </div>
-
-          {r.warnings.length > 0 && (
-            <ul className="mt-2 text-yellow-300 text-xs list-disc pl-6">
-              {r.warnings.map((w, i) => <li key={i}>{w}</li>)}
-            </ul>
-          )}
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <KpiCard label="Clubless Total" value={r.clublessTotal} />
         <KpiCard label="Net Revenue" value={r.netRevenue} />
@@ -115,13 +65,6 @@ export default function ResultsPanel({
           </div>
         </div>
       </div>
-
-      {/* Toast */}
-      {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 card px-4 py-2">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }

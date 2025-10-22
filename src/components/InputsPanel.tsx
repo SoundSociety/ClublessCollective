@@ -1,26 +1,38 @@
 import React from 'react';
 import type { Inputs } from '../types';
 
-type Props = {
-  inputs: Inputs;
-  setInputs: (p: Partial<Inputs>) => void;
-};
+type Props = { inputs: Inputs; setInputs: (p: Partial<Inputs>) => void; };
 
 function NumInput({
   label, value, onChange, min = 0, step = 1
 }: {
   label: string; value: number; onChange: (v: number) => void; min?: number; step?: number
 }) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = Number(e.target.value);
+    onChange(isFinite(v) ? v : 0);
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const v = Number(e.target.value);
+    onChange(isFinite(v) ? Math.max(min, v) : 0); // normalize, strips leading zeros
+  };
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select(); // easier to overwrite on mobile/desktop
+  };
   return (
     <label className="block mb-3">
       <span className="text-sm text-white/80">{label}</span>
       <input
         className="glass-input mt-1"
         type="number"
+        inputMode="numeric"
+        pattern="[0-9]*"
         value={isFinite(value) ? value : 0}
         min={min}
         step={step}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
       />
     </label>
   );
@@ -50,22 +62,20 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
       <h2 className="text-lg font-semibold mb-3">Inputs</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* NEW: Capacity number */}
+        {/* Capacity & expected attendance (attendees = derived) */}
         <NumInput
           label="Max Occupancy"
           value={inputs.maxOccupancy}
           onChange={(v) => setInputs({ maxOccupancy: Math.max(0, v) })}
           step={1}
         />
-
-        {/* NEW: Expected attendance % */}
         <PctInput
           label="Expected Attendance %"
           value={inputs.attendancePercent}
           onChange={(v) => setInputs({ attendancePercent: Math.max(0, Math.min(100, v)) })}
         />
 
-        {/* Existing behavioral mix */}
+        {/* Behavioral mix */}
         <PctInput
           label="% Drinkers"
           value={inputs.percentDrinkers}
@@ -77,57 +87,19 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
           onChange={(v) => setInputs({ percentEating: Math.max(0, Math.min(100, v)) })}
         />
 
-        <NumInput
-          label="Ticket Price ($)"
-          value={inputs.ticketPrice}
-          onChange={(v) => setInputs({ ticketPrice: Math.max(0, v) })}
-          step={0.01}
-        />
-        <NumInput
-          label="Eventbrite Fee Per Ticket ($)"
-          value={inputs.eventbriteFeePerTicket}
-          onChange={(v) => setInputs({ eventbriteFeePerTicket: Math.max(0, v) })}
-          step={0.01}
-        />
+        {/* Pricing */}
+        <NumInput label="Ticket Price ($)" value={inputs.ticketPrice} onChange={(v) => setInputs({ ticketPrice: Math.max(0, v) })} step={0.01} />
+        <NumInput label="Eventbrite Fee Per Ticket ($)" value={inputs.eventbriteFeePerTicket} onChange={(v) => setInputs({ eventbriteFeePerTicket: Math.max(0, v) })} step={0.01} />
+        <NumInput label="Avg Drink Price ($)" value={inputs.avgDrinkPrice} onChange={(v) => setInputs({ avgDrinkPrice: Math.max(0, v) })} step={0.01} />
+        <NumInput label="Avg Food Price ($)" value={inputs.avgFoodPrice} onChange={(v) => setInputs({ avgFoodPrice: Math.max(0, v) })} step={0.01} />
 
-        <NumInput
-          label="Avg Drink Price ($)"
-          value={inputs.avgDrinkPrice}
-          onChange={(v) => setInputs({ avgDrinkPrice: Math.max(0, v) })}
-          step={0.01}
-        />
-        <NumInput
-          label="Avg Food Price ($)"
-          value={inputs.avgFoodPrice}
-          onChange={(v) => setInputs({ avgFoodPrice: Math.max(0, v) })}
-          step={0.01}
-        />
+        {/* Staffing */}
+        <NumInput label="Event Hours" value={inputs.eventHours} onChange={(v) => setInputs({ eventHours: Math.max(0, v) })} step={1} />
+        <NumInput label="# Bartenders" value={inputs.numBartenders} onChange={(v) => setInputs({ numBartenders: Math.max(0, v) })} step={1} />
+        <NumInput label="# Security" value={inputs.numSecurity} onChange={(v) => setInputs({ numSecurity: Math.max(0, v) })} step={1} />
 
-        <NumInput
-          label="Event Hours"
-          value={inputs.eventHours}
-          onChange={(v) => setInputs({ eventHours: Math.max(0, v) })}
-          step={1}
-        />
-        <NumInput
-          label="# Bartenders"
-          value={inputs.numBartenders}
-          onChange={(v) => setInputs({ numBartenders: Math.max(0, v) })}
-          step={1}
-        />
-        <NumInput
-          label="# Security"
-          value={inputs.numSecurity}
-          onChange={(v) => setInputs({ numSecurity: Math.max(0, v) })}
-          step={1}
-        />
-
-        <NumInput
-          label="Venue Cost ($)"
-          value={inputs.venueCost}
-          onChange={(v) => setInputs({ venueCost: Math.max(0, v) })}
-          step={0.01}
-        />
+        {/* Costs */}
+        <NumInput label="Venue Cost ($)" value={inputs.venueCost} onChange={(v) => setInputs({ venueCost: Math.max(0, v) })} step={0.01} />
       </div>
 
       {/* Other costs */}
@@ -136,9 +108,7 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
           <span className="text-sm text-white/80">Other Direct Costs</span>
           <button
             className="btn"
-            onClick={() =>
-              setInputs({ otherCosts: [...inputs.otherCosts, { label: 'Cost', amount: 0 }] })
-            }
+            onClick={() => setInputs({ otherCosts: [...inputs.otherCosts, { label: 'Cost', amount: 0 }] })}
           >
             Add
           </button>
@@ -161,8 +131,15 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
                 step={0.01}
                 value={c.amount}
                 onChange={(e) => {
+                  const v = Number(e.target.value);
                   const arr = inputs.otherCosts.slice();
-                  arr[idx] = { ...c, amount: parseFloat(e.target.value) };
+                  arr[idx] = { ...c, amount: isFinite(v) ? v : 0 };
+                  setInputs({ otherCosts: arr });
+                }}
+                onBlur={(e) => {
+                  const v = Number(e.target.value);
+                  const arr = inputs.otherCosts.slice();
+                  arr[idx] = { ...c, amount: isFinite(v) ? Math.max(0, v) : 0 };
                   setInputs({ otherCosts: arr });
                 }}
               />
@@ -181,77 +158,24 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
         </div>
       </div>
 
-      <button
-        className="mt-4 text-sm text-brand-accent underline"
-        onClick={() => setShowAdv((v) => !v)}
-      >
+      <button className="mt-4 text-sm text-brand underline" onClick={() => setShowAdv(v => !v)}>
         {showAdv ? 'Hide' : 'Show'} Advanced / Constants
       </button>
 
       {showAdv && (
         <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-          <NumInput
-            label="Toast % Fee"
-            value={inputs.toastPercent}
-            onChange={(v) => setInputs({ toastPercent: Math.max(0, v) })}
-            step={0.01}
-          />
-          <NumInput
-            label="Toast Fixed Fee ($)"
-            value={inputs.toastFixed}
-            onChange={(v) => setInputs({ toastFixed: Math.max(0, v) })}
-            step={0.01}
-          />
-          <NumInput
-            label="Drink COGS % "
-            value={inputs.drinkCogsPct}
-            onChange={(v) => setInputs({ drinkCogsPct: Math.max(0, v) })}
-            step={0.01}
-          />
-          <NumInput
-            label="Food COGS % "
-            value={inputs.foodCogsPct}
-            onChange={(v) => setInputs({ foodCogsPct: Math.max(0, v) })}
-            step={0.01}
-          />
+          <NumInput label="Toast % Fee" value={inputs.toastPercent} onChange={(v) => setInputs({ toastPercent: Math.max(0, v) })} step={0.01} />
+          <NumInput label="Toast Fixed Fee ($)" value={inputs.toastFixed} onChange={(v) => setInputs({ toastFixed: Math.max(0, v) })} step={0.01} />
+          <NumInput label="Drink COGS % " value={inputs.drinkCogsPct} onChange={(v) => setInputs({ drinkCogsPct: Math.max(0, v) })} step={0.01} />
+          <NumInput label="Food COGS % " value={inputs.foodCogsPct} onChange={(v) => setInputs({ foodCogsPct: Math.max(0, v) })} step={0.01} />
 
-          <NumInput
-            label="Bartender Pay ($/hr)"
-            value={inputs.bartenderPay}
-            onChange={(v) => setInputs({ bartenderPay: Math.max(0, v) })}
-            step={0.01}
-          />
-          <NumInput
-            label="Bartender Bill ($/hr)"
-            value={inputs.bartenderBill}
-            onChange={(v) => setInputs({ bartenderBill: Math.max(0, v) })}
-            step={0.01}
-          />
-          <NumInput
-            label="Security Pay ($/hr)"
-            value={inputs.securityPay}
-            onChange={(v) => setInputs({ securityPay: Math.max(0, v) })}
-            step={0.01}
-          />
-          <NumInput
-            label="Security Bill ($/hr)"
-            value={inputs.securityBill}
-            onChange={(v) => setInputs({ securityBill: Math.max(0, v) })}
-            step={0.01}
-          />
+          <NumInput label="Bartender Pay ($/hr)" value={inputs.bartenderPay} onChange={(v) => setInputs({ bartenderPay: Math.max(0, v) })} step={0.01} />
+          <NumInput label="Bartender Bill ($/hr)" value={inputs.bartenderBill} onChange={(v) => setInputs({ bartenderBill: Math.max(0, v) })} step={0.01} />
+          <NumInput label="Security Pay ($/hr)" value={inputs.securityPay} onChange={(v) => setInputs({ securityPay: Math.max(0, v) })} step={0.01} />
+          <NumInput label="Security Bill ($/hr)" value={inputs.securityBill} onChange={(v) => setInputs({ securityBill: Math.max(0, v) })} step={0.01} />
 
-          <NumInput
-            label="Artist Split (0-1)"
-            value={inputs.artistSplit}
-            onChange={(v) => setInputs({ artistSplit: Math.max(0, Math.min(1, v)) })}
-            step={0.01}
-          />
-          <NumInput
-            label="Clubless Split (0-1)"
-            value={inputs.clublessSplit}
-            onChange={(v) => setInputs({ clublessSplit: Math.max(0, Math.min(1, v)) })}
-            step={0.01}
-          />
+          <NumInput label="Artist Split (0-1)" value={inputs.artistSplit} onChange={(v) => setInputs({ artistSplit: Math.max(0, Math.min(1, v)) })} step={0.01} />
+          <NumInput label="Clubless Split (0-1)" value={inputs.clublessSplit} onChange={(v) => setInputs({ clublessSplit: Math.max(0, Math.min(1, v)) })} step={0.01} />
         </div>
       )}
     </div>

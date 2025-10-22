@@ -1,28 +1,33 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ===== Brand variables (tweak these to match your site) ===== */
+:root{
+  --brand: #6ee7f9;          /* accent color for buttons etc. */
+  --brand-rgb: 110,231,249;  /* same as rgb for charts */
   color-scheme: dark;
 }
 
+html, body, #root { height: 100%; background: #0b0b12; color: #fff; }
+
+/* Reusable UI */
 .card {
   @apply bg-[rgba(255,255,255,0.06)] backdrop-blur border border-white/10 rounded-2xl shadow-glass;
 }
-
 .glass-input {
-  @apply bg-white/5 border border-white/10 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-brand-accent;
+  @apply bg-white/5 border border-white/10 rounded-lg px-3 py-2 w-full focus:outline-none;
+  box-shadow: inset 0 0 0 0px transparent;
 }
+.glass-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand);
+}
+.section-title { @apply text-sm uppercase tracking-widest text-white/60; }
+.kpi { @apply card p-4 md:p-5; }
+.btn { @apply rounded-lg px-4 py-2 bg-white/10 hover:bg-white/20 transition; }
 
-.section-title{
-  @apply text-sm uppercase tracking-widest text-white/60;
-}
-
-.kpi {
-  @apply card p-4 md:p-5;
-}
-
-.btn {
-  @apply rounded-lg px-4 py-2 bg-white/10 hover:bg-white/20 transition;
-}
+/* Quick brand helpers */
+.text-brand { color: var(--brand); }
+.bg-brand { background-color: var(--brand); }
+.border-brand { border-color: var(--brand); }

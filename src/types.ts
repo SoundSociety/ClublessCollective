@@ -1,8 +1,10 @@
-
 export type Inputs = {
-  attendees: number;
+  // NEW: capacity + expected attendance %
+  maxOccupancy: number;        // e.g., 300
+  attendancePercent: number;   // 0..100 (% who actually attend)
+
   percentDrinkers: number; // 0..100
-  percentEating: number; // 0..100
+  percentEating: number;   // 0..100
 
   ticketPrice: number;
   eventbriteFeePerTicket: number;
@@ -25,7 +27,7 @@ export type Inputs = {
   numSecurity: number;
   eventHours: number;
 
-  artistSplit: number; // 0..1
+  artistSplit: number;   // 0..1
   clublessSplit: number; // 0..1
 
   venueCost: number;
@@ -33,6 +35,9 @@ export type Inputs = {
 }
 
 export type Results = {
+  // NEW: attendees is now derived from capacity × %
+  attendees: number;
+
   drinkers: number;
   foodBuyers: number;
 

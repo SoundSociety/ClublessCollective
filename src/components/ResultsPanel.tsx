@@ -1,5 +1,4 @@
-
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Inputs, Results } from '../types';
 import { fmt } from '../utils/currency';
 import TicketsDrinksFoodChart from './Chart';
@@ -7,18 +6,23 @@ import KpiCard from './KpiCard';
 import PnlTable from './PnlTable';
 import confetti from 'canvas-confetti';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { exportInvoicePDF } from '../utils/exportPDF';
 
-export default function ResultsPanel({ r, inputs, onReset }: { r: Results; inputs: Inputs; onReset: ()=>void }){
+export default function ResultsPanel({
+  r, inputs, onReset
+}: {
+  r: Results; inputs: Inputs; onReset: () => void;
+}) {
   const [toast, setToast] = useState<string | null>(null);
   const [lastArtist, setLastArtist] = useState<number>(r.artistEarnings);
   const debouncedArtist = useDebouncedValue(r.artistEarnings, 400);
 
   useEffect(() => {
     const delta = debouncedArtist - lastArtist;
-    if (delta >= 50){
+    if (delta >= 50) {
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.3 } });
       setToast(`🎉 Congrats! You could earn ${fmt(debouncedArtist)}`);
-      setTimeout(()=> setToast(null), 3000);
+      setTimeout(() => setToast(null), 3000);
     }
     if (debouncedArtist !== lastArtist) setLastArtist(debouncedArtist);
   }, [debouncedArtist]);
@@ -26,13 +30,15 @@ export default function ResultsPanel({ r, inputs, onReset }: { r: Results; input
   const copySummary = async () => {
     const lines = [
       'Clubless Profit Calculator (MVP) — Summary',
-      `Attendees: ${inputs.attendees}, %Drinkers: ${inputs.percentDrinkers}%, %Eating: ${inputs.percentEating}%`,
+      `Max Occupancy: ${inputs.maxOccupancy}, Expected Attendance %: ${inputs.attendancePercent}%`,
+      `Attendees (derived): ${r.attendees}`,
+      `%Drinkers: ${inputs.percentDrinkers}%, %Eating: ${inputs.percentEating}%`,
       `Ticket: $${inputs.ticketPrice.toFixed(2)} (Eventbrite Fee: $${inputs.eventbriteFeePerTicket.toFixed(2)} per ticket)`,
       `Avg Drink: $${inputs.avgDrinkPrice.toFixed(2)} | Avg Food: $${inputs.avgFoodPrice.toFixed(2)} | Toast: ${inputs.toastPercent}% + $${inputs.toastFixed.toFixed(2)}`,
       `COGS — Drinks: ${inputs.drinkCogsPct}% | Food: ${inputs.foodCogsPct}%`,
       `Staff — Bartenders: ${inputs.numBartenders} (${inputs.bartenderPay}/hr pay, ${inputs.bartenderBill}/hr bill), Security: ${inputs.numSecurity} (${inputs.securityPay}/hr pay, ${inputs.securityBill}/hr bill), Hours: ${inputs.eventHours}`,
-      `Splits — Artist: ${(inputs.artistSplit*100).toFixed(0)}% | Clubless: ${(inputs.clublessSplit*100).toFixed(0)}%`,
-      `Venue Cost: ${fmt(inputs.venueCost)} | Other Costs: ${fmt(inputs.otherCosts.reduce((s,c)=> s + (isFinite(Number(c.amount)) ? Number(c.amount) : 0), 0))}`,
+      `Splits — Artist: ${(inputs.artistSplit * 100).toFixed(0)}% | Clubless: ${(inputs.clublessSplit * 100).toFixed(0)}%`,
+      `Venue Cost: ${fmt(inputs.venueCost)} | Other Costs: ${fmt(inputs.otherCosts.reduce((s, c) => s + (isFinite(Number(c.amount)) ? Number(c.amount) : 0), 0))}`,
       '',
       `Ticket Revenue: ${fmt(r.ticketRevenue)}`,
       `Net Drink Revenue: ${fmt(r.netDrinkRevenue)} (after Toast fees)`,
@@ -46,33 +52,40 @@ export default function ResultsPanel({ r, inputs, onReset }: { r: Results; input
     try {
       await navigator.clipboard.writeText(lines);
       setToast('Copied summary to clipboard.');
-      setTimeout(()=> setToast(null), 2000);
+      setTimeout(() => setToast(null), 2000);
     } catch {
       setToast('Copy failed. Select and copy manually.');
-      setTimeout(()=> setToast(null), 2500);
+      setTimeout(() => setToast(null), 2500);
     }
   };
 
   return (
     <div className="space-y-4">
-      <div className="card p-5">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-semibold">Clubless Profit Calculator (MVP)</h1>
-            <p className="text-white/70">Test your event idea and see potential earnings in seconds.</p>
+      {/* Sticky top header with Potential Earnings */}
+      <div className="sticky top-0 z-40">
+        <div className="card p-4 md:p-5 border border-brand-accent/30 bg-[rgba(10,10,18,0.8)] backdrop-blur">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-xl md:text-2xl font-semibold">Clubless Profit Calculator (MVP)</h1>
+              <p className="text-white/70 text-sm">Test your event idea and see potential earnings in seconds.</p>
+              <p className="text-white/60 text-xs mt-1">
+                Max Occ: <span className="font-medium">{inputs.maxOccupancy}</span> •
+                Expected Att.: <span className="font-medium">{inputs.attendancePercent}%</span> •
+                Derived Attendees: <span className="font-medium">{r.attendees}</span>
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-white/70">Potential Earnings (Artist)</div>
+              <div className="text-3xl md:text-4xl font-bold mt-1">{fmt(r.artistEarnings)}</div>
+            </div>
           </div>
-        </div>
 
-        <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
-          <div className="text-sm text-white/70">Potential Earnings (Artist)</div>
-          <div className="text-4xl md:text-5xl font-bold mt-1">{fmt(r.artistEarnings)}</div>
+          {r.warnings.length > 0 && (
+            <ul className="mt-2 text-yellow-300 text-xs list-disc pl-6">
+              {r.warnings.map((w, i) => <li key={i}>{w}</li>)}
+            </ul>
+          )}
         </div>
-
-        {r.warnings.length > 0 && (
-          <ul className="mt-3 text-yellow-300 text-sm list-disc pl-6">
-            {r.warnings.map((w, i)=> <li key={i}>{w}</li>)}
-          </ul>
-        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -85,7 +98,9 @@ export default function ResultsPanel({ r, inputs, onReset }: { r: Results; input
         <KpiCard label="Net Food Revenue" value={r.netFoodRevenue} />
       </div>
 
-      <TicketsDrinksFoodChart data={{ tickets: r.ticketRevenue, drinks: r.netDrinkRevenue, food: r.netFoodRevenue }} />
+      <TicketsDrinksFoodChart
+        data={{ tickets: r.ticketRevenue, drinks: r.netDrinkRevenue, food: r.netFoodRevenue }}
+      />
 
       <PnlTable r={r} />
 
@@ -96,7 +111,7 @@ export default function ResultsPanel({ r, inputs, onReset }: { r: Results; input
           <div className="flex gap-2">
             <button className="btn" onClick={onReset}>Reset to defaults</button>
             <button className="btn" onClick={copySummary}>Copy summary</button>
-            <a className="btn" href="javascript:window.print()">Export PDF</a>
+            <button className="btn" onClick={() => exportInvoicePDF(inputs, r)}>Export PDF</button>
           </div>
         </div>
       </div>
@@ -108,5 +123,5 @@ export default function ResultsPanel({ r, inputs, onReset }: { r: Results; input
         </div>
       )}
     </div>
-  )
+  );
 }

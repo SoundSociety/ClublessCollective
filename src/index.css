@@ -11,9 +11,8 @@
   --accent: #7ED321; /* Neon Green */
   --accent-rgb: 126, 211, 33;
 
-  /* Header heights used in App.tsx for padding-top */
-  --header-h-mobile: 128px;
-  --header-h-desktop: 140px;
+  /* default header height fallback (overridden by JS) */
+  --sticky-header-h: 140px;
 
   color-scheme: dark;
 }

@@ -96,15 +96,14 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
 
         {/* Pricing */}
         <NumInput label="Ticket Price ($)" value={inputs.ticketPrice} onChange={(v) => setInputs({ ticketPrice: Math.max(0, v) })} step={0.01} decimal />
-        <NumInput label="Eventbrite Fee Per Ticket ($)" value={inputs.eventbriteFeePerTicket} onChange={(v) => setInputs({ eventbriteFeePerTicket: Math.max(0, v) })} step={0.01} />
-        <NumInput label="Avg Drink Price ($)" value={inputs.avgDrinkPrice} onChange={(v) => setInputs({ avgDrinkPrice: Math.max(0, v) })} step={0.01} />
-        <NumInput label="Avg Food Price ($)" value={inputs.avgFoodPrice} onChange={(v) => setInputs({ avgFoodPrice: Math.max(0, v) })} step={0.01} />
+        <NumInput label="Eventbrite Fee Per Ticket ($)" value={inputs.eventbriteFeePerTicket} onChange={(v) => setInputs({ eventbriteFeePerTicket: Math.max(0, v) })} step={0.01} decimal />
+        <NumInput label="Avg Drink Price ($)" value={inputs.avgDrinkPrice} onChange={(v) => setInputs({ avgDrinkPrice: Math.max(0, v) })} step={0.01} decimal />
+        <NumInput label="Avg Food Price ($)" value={inputs.avgFoodPrice} onChange={(v) => setInputs({ avgFoodPrice: Math.max(0, v) })} step={0.01} decimal />
 
         {/* Staffing core */}
-        <NumInput label="Event Hours" value={inputs.eventHours} onChange={(v) => setInputs({ eventHours: Math.max(0, v) })} step={1} />
+        <NumInput label="Event Hours" value={inputs.eventHours} onChange={(v) => setInputs({ eventHours: Math.max(0, v) })} step={1} decimal />
         <NumInput label="No. of Bartenders/Caterers" value={inputs.numBartenders} onChange={(v) => setInputs({ numBartenders: Math.max(0, v) })} step={1} />
-        <NumInput label="No. of
-         Security" value={inputs.numSecurity} onChange={(v) => setInputs({ numSecurity: Math.max(0, v) })} step={1} />
+        <NumInput label="No. of Security" value={inputs.numSecurity} onChange={(v) => setInputs({ numSecurity: Math.max(0, v) })} step={1} />
 
         {/* Artist-facing bill rates + derived pay display */}
         <div className="md:col-span-1">
@@ -112,7 +111,7 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
             label="Amount Artist is charged for Bartender Bill ($/hr)"
             value={inputs.bartenderBill}
             onChange={(v) => setInputs({ bartenderBill: Math.max(0, v) })}
-            step={0.01}
+            step={0.01} decimal 
           />
           <div className="text-xs text-white/60 -mt-2 mb-2">
             Clubless pays ≈ ${derivedBartenderPay.toFixed(2)}/hr
@@ -124,7 +123,7 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
             label="Amount Artist is charged for Security Bill ($/hr)"
             value={inputs.securityBill}
             onChange={(v) => setInputs({ securityBill: Math.max(0, v) })}
-            step={0.01}
+            step={0.01} decimal 
           />
           <div className="text-xs text-white/60 -mt-2 mb-2">
             Clubless pays ≈ ${derivedSecurityPay.toFixed(2)}/hr
@@ -132,7 +131,7 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
         </div>
 
         {/* Costs */}
-        <NumInput label="Venue Cost ($)" value={inputs.venueCost} onChange={(v) => setInputs({ venueCost: Math.max(0, v) })} step={0.01} />
+        <NumInput label="Venue Cost ($)" value={inputs.venueCost} onChange={(v) => setInputs({ venueCost: Math.max(0, v) })} step={0.01} decimal />
       </div>
 
       {/* Other costs */}
@@ -197,22 +196,22 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
 
       {showAdv && (
         <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-          <NumInput label="Toast % Fee" value={inputs.toastPercent} onChange={(v) => setInputs({ toastPercent: Math.max(0, v) })} step={0.01} />
-          <NumInput label="Toast Fixed Fee ($)" value={inputs.toastFixed} onChange={(v) => setInputs({ toastFixed: Math.max(0, v) })} step={0.01} />
-          <NumInput label="Drink COGS % " value={inputs.drinkCogsPct} onChange={(v) => setInputs({ drinkCogsPct: Math.max(0, v) })} step={0.01} />
-          <NumInput label="Food COGS % " value={inputs.foodCogsPct} onChange={(v) => setInputs({ foodCogsPct: Math.max(0, v) })} step={0.01} />
+          <NumInput label="Toast % Fee" value={inputs.toastPercent} onChange={(v) => setInputs({ toastPercent: Math.max(0, v) })} step={0.01} decimal />
+          <NumInput label="Toast Fixed Fee ($)" value={inputs.toastFixed} onChange={(v) => setInputs({ toastFixed: Math.max(0, v) })} step={0.01} decimal />
+          <NumInput label="Drink COGS % " value={inputs.drinkCogsPct} onChange={(v) => setInputs({ drinkCogsPct: Math.max(0, v) })} step={0.01} decimal />
+          <NumInput label="Food COGS % " value={inputs.foodCogsPct} onChange={(v) => setInputs({ foodCogsPct: Math.max(0, v) })} step={0.01} decimal />
 
           {/* Discount that derives the pay from bill */}
           <NumInput
             label="Staffing Discount % (Clubless pays bill × (1 − %))"
             value={inputs.staffingDiscountPct}
             onChange={(v) => setInputs({ staffingDiscountPct: Math.max(0, Math.min(100, v)) })}
-            step={0.01}
+            step={0.01} decimal 
           />
 
           {/* Splits */}
-          <NumInput label="Artist Split (0-1)" value={inputs.artistSplit} onChange={(v) => setInputs({ artistSplit: Math.max(0, Math.min(1, v)) })} step={0.01} />
-          <NumInput label="Clubless Split (0-1)" value={inputs.clublessSplit} onChange={(v) => setInputs({ clublessSplit: Math.max(0, Math.min(1, v)) })} step={0.01} />
+          <NumInput label="Artist Split Percentage (Ex. 0.80)" value={inputs.artistSplit} onChange={(v) => setInputs({ artistSplit: Math.max(0, Math.min(1, v)) })} step={0.01} decimal />
+          <NumInput label="Clubless Split Percentage (Ex. 0.20)" value={inputs.clublessSplit} onChange={(v) => setInputs({ clublessSplit: Math.max(0, Math.min(1, v)) })} step={0.01} decimal />
         </div>
       )}
     </div>

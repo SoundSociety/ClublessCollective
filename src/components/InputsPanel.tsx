@@ -4,9 +4,9 @@ import type { Inputs } from '../types';
 type Props = { inputs: Inputs; setInputs: (p: Partial<Inputs>) => void; };
 
 function NumInput({
-  label, value, onChange, min = 0, step = 1
+  label, value, onChange, min = 0, step = 1, decimal = false
 }: {
-  label: string; value: number; onChange: (v: number) => void; min?: number; step?: number
+  label: string; value: number; onChange: (v: number) => void; min?: number; step?: number; decimal?: boolean
 }) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = Number(e.target.value);
@@ -19,17 +19,21 @@ function NumInput({
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.target.select(); // easier overwrite on mobile/desktop
   };
+
+  // Use decimal keypad when needed (and don't block "." with pattern)
+  const inputProps = decimal
+    ? { inputMode: 'decimal' as const, step: step ?? 'any' }
+    : { inputMode: 'numeric' as const, step: step ?? 1, pattern: '[0-9]*' };
+
   return (
     <label className="block mb-3">
       <span className="text-sm text-white/80">{label}</span>
       <input
         className="glass-input mt-1"
         type="number"
-        inputMode="numeric"
-        pattern="[0-9]*"
         value={isFinite(value) ? value : 0}
         min={min}
-        step={step}
+        {...inputProps}
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={handleFocus}
@@ -37,6 +41,7 @@ function NumInput({
     </label>
   );
 }
+
 
 function PctInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
@@ -90,7 +95,7 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
         />
 
         {/* Pricing */}
-        <NumInput label="Ticket Price ($)" value={inputs.ticketPrice} onChange={(v) => setInputs({ ticketPrice: Math.max(0, v) })} step={0.01} />
+        <NumInput label="Ticket Price ($)" value={inputs.ticketPrice} onChange={(v) => setInputs({ ticketPrice: Math.max(0, v) })} step={0.01} decimal />
         <NumInput label="Eventbrite Fee Per Ticket ($)" value={inputs.eventbriteFeePerTicket} onChange={(v) => setInputs({ eventbriteFeePerTicket: Math.max(0, v) })} step={0.01} />
         <NumInput label="Avg Drink Price ($)" value={inputs.avgDrinkPrice} onChange={(v) => setInputs({ avgDrinkPrice: Math.max(0, v) })} step={0.01} />
         <NumInput label="Avg Food Price ($)" value={inputs.avgFoodPrice} onChange={(v) => setInputs({ avgFoodPrice: Math.max(0, v) })} step={0.01} />

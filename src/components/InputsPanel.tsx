@@ -206,12 +206,36 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
             label="Staffing Discount % (Clubless pays bill × (1 − %))"
             value={inputs.staffingDiscountPct}
             onChange={(v) => setInputs({ staffingDiscountPct: Math.max(0, Math.min(100, v)) })}
-            step={0.01} decimal 
+            step={0.01} 
           />
 
           {/* Splits */}
-          <NumInput label="Artist Split Percentage (Ex. 0.80)" value={inputs.artistSplit} onChange={(v) => setInputs({ artistSplit: Math.max(0, Math.min(1, v)) })} step={0.01} decimal />
-          <NumInput label="Clubless Split Percentage (Ex. 0.20)" value={inputs.clublessSplit} onChange={(v) => setInputs({ clublessSplit: Math.max(0, Math.min(1, v)) })} step={0.01} decimal />
+          <NumInput
+  label="Artist Split Percentage (Ex. 0.80)"
+  value={inputs.artistSplit}
+  step={0.01}
+  decimal
+  onChange={(v) => {
+    const a = isFinite(v) ? v : 0;
+    const artist = Math.max(0, Math.min(1, a));
+    const clubless = Math.max(0, Math.min(1, 1 - artist));
+    setInputs({ artistSplit: artist, clublessSplit: clubless });
+  }}
+/>
+
+<NumInput
+  label="Clubless Split Percentage (Ex. 0.20)"
+  value={inputs.clublessSplit}
+  step={0.01}
+  decimal
+  onChange={(v) => {
+    const c = isFinite(v) ? v : 0;
+    const clubless = Math.max(0, Math.min(1, c));
+    const artist = Math.max(0, Math.min(1, 1 - clubless));
+    setInputs({ artistSplit: artist, clublessSplit: clubless });
+  }}
+/>
+
         </div>
       )}
     </div>

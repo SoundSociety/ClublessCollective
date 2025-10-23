@@ -38,6 +38,10 @@ export function exportInvoicePDF(inputs: Inputs, r: Results) {
   doc.setLineWidth(0.8);
   doc.line(12, 28, pageWidth - 12, 28);
 
+  // Derived staffing pay
+  const bartenderPay = inputs.bartenderBill * (1 - inputs.staffingDiscountPct / 100);
+  const securityPay  = inputs.securityBill  * (1 - inputs.staffingDiscountPct / 100);
+
   // Event Summary
   doc.setTextColor(text[0], text[1], text[2]);
   doc.setFont("helvetica", "bold");
@@ -68,10 +72,11 @@ export function exportInvoicePDF(inputs: Inputs, r: Results) {
       ["COGS (Drinks / Food)", `${inputs.drinkCogsPct}% / ${inputs.foodCogsPct}%`],
       [
         "Staffing",
-        `Bartenders: ${inputs.numBartenders} (${fmt(inputs.bartenderPay)}/hr pay, ${fmt(inputs.bartenderBill)}/hr bill); ` +
-          `Security: ${inputs.numSecurity} (${fmt(inputs.securityPay)}/hr pay, ${fmt(inputs.securityBill)}/hr bill); ` +
-          `Hours: ${inputs.eventHours}`
+        `Bartenders: ${inputs.numBartenders} (~${fmt(bartenderPay)}/hr pay, ${fmt(inputs.bartenderBill)}/hr bill); ` +
+        `Security: ${inputs.numSecurity} (~${fmt(securityPay)}/hr pay, ${fmt(inputs.securityBill)}/hr bill); ` +
+        `Hours: ${inputs.eventHours}`
       ],
+      ["Staffing Discount", `${inputs.staffingDiscountPct}% less than bill`],
       ["Splits", `Artist ${Math.round(inputs.artistSplit * 100)}% / Clubless ${Math.round(inputs.clublessSplit * 100)}%`],
       ["Venue Cost", fmt(inputs.venueCost)],
       [

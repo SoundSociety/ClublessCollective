@@ -29,10 +29,9 @@ export default function StickyHeader({
               </div>
 
               <button
-                className={`btn h-10 px-4 ${isDirty ? 'bg-brand text-black hover:opacity-90' : 'bg-white/10 text-white/60 cursor-not-allowed'}`}
-                onClick={onSubmit}
+                className={`btn h-10 px-4 ${isDirty ? 'bg-accent text-black hover:opacity-90' : 'bg-white/10 text-white/50 cursor-not-allowed'}`}
                 disabled={!isDirty}
-                title={isDirty ? 'Calculate' : 'No changes to calculate'}
+                onClick={onSubmit}
               >
                 Calculate
               </button>

@@ -39,6 +39,8 @@ html, body, #root { height: 100%; background: #0b0b12; color: #fff; }
 .text-brand { color: var(--brand); }
 .bg-brand { background-color: var(--brand); }
 .border-brand { border-color: var(--brand); }
+.bg-accent { background-color: var(--accent); }
+
 
 /* Range sliders — iOS & webkit */
 input[type="range"] {

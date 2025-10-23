@@ -52,11 +52,18 @@ export function calculate(inputs: Inputs): Results {
   const totalRevenue = ticketRevenue + netDrinkRevenue + netFoodRevenue;
   const totalCOGS = drinkCOGS + foodCOGS;
 
-  const bartenderMargin = (nz(inputs.bartenderBill, 'bartenderBill') - nz(inputs.bartenderPay, 'bartenderPay')) 
-    * nz(inputs.eventHours, 'eventHours') * nz(inputs.numBartenders, 'numBartenders');
+  const staffingDiscount = Math.max(0, Math.min(100, nz(inputs.staffingDiscountPct, 'staffingDiscountPct'))) / 100;
+  const bartenderBill = Math.max(0, nz(inputs.bartenderBill, 'bartenderBill'));
+  const securityBill  = Math.max(0, nz(inputs.securityBill, 'securityBill'));
+  const bartenderPay = bartenderBill * (1 - staffingDiscount);
+  const securityPay  = securityBill  * (1 - staffingDiscount);
 
-  const securityMargin = (nz(inputs.securityBill, 'securityBill') - nz(inputs.securityPay, 'securityPay')) 
-    * nz(inputs.eventHours, 'eventHours') * nz(inputs.numSecurity, 'numSecurity');
+  const hours = Math.max(0, nz(inputs.eventHours, 'eventHours'));
+  const nBart = Math.max(0, nz(inputs.numBartenders, 'numBartenders'));
+  const nSec  = Math.max(0, nz(inputs.numSecurity, 'numSecurity'));
+
+  const bartenderMargin = nBart * hours * (bartenderBill - bartenderPay);
+  const securityMargin  = nSec  * hours * (securityBill  - securityPay);
 
   const venueCost = Math.max(0, nz(inputs.venueCost, 'venueCost'));
   const otherCosts = Array.isArray(inputs.otherCosts) ? inputs.otherCosts : [];

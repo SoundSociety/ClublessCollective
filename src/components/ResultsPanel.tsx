@@ -12,6 +12,9 @@ export default function ResultsPanel({
   r: Results; inputs: Inputs; onReset: () => void;
 }) {
   const copySummary = async () => {
+    const bartenderPay = inputs.bartenderBill * (1 - inputs.staffingDiscountPct / 100);
+    const securityPay  = inputs.securityBill  * (1 - inputs.staffingDiscountPct / 100);
+
     const lines = [
       'Clubless Profit Calculator (MVP) — Summary',
       `Max Occupancy: ${inputs.maxOccupancy}, Expected Attendance %: ${inputs.attendancePercent}%`,
@@ -20,7 +23,10 @@ export default function ResultsPanel({
       `Ticket: $${inputs.ticketPrice.toFixed(2)} (Eventbrite Fee: $${inputs.eventbriteFeePerTicket.toFixed(2)} per ticket)`,
       `Avg Drink: $${inputs.avgDrinkPrice.toFixed(2)} | Avg Food: $${inputs.avgFoodPrice.toFixed(2)} | Toast: ${inputs.toastPercent}% + $${inputs.toastFixed.toFixed(2)}`,
       `COGS — Drinks: ${inputs.drinkCogsPct}% | Food: ${inputs.foodCogsPct}%`,
-      `Staff — Bartenders: ${inputs.numBartenders} (${inputs.bartenderPay}/hr pay, ${inputs.bartenderBill}/hr bill), Security: ${inputs.numSecurity} (${inputs.securityPay}/hr pay, ${inputs.securityBill}/hr bill), Hours: ${inputs.eventHours}`,
+      `Staff — Bartenders: ${inputs.numBartenders} (~$${bartenderPay.toFixed(2)}/hr pay, $${inputs.bartenderBill}/hr bill), ` +
+        `Security: ${inputs.numSecurity} (~$${securityPay.toFixed(2)}/hr pay, $${inputs.securityBill}/hr bill), ` +
+        `Hours: ${inputs.eventHours}`,
+      `Staffing Discount: ${inputs.staffingDiscountPct}%`,
       `Splits — Artist: ${(inputs.artistSplit * 100).toFixed(0)}% | Clubless: ${(inputs.clublessSplit * 100).toFixed(0)}%`,
       `Venue Cost: ${fmt(inputs.venueCost)} | Other Costs: ${fmt(inputs.otherCosts.reduce((s, c) => s + (isFinite(Number(c.amount)) ? Number(c.amount) : 0), 0))}`,
       '',

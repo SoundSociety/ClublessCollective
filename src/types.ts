@@ -1,5 +1,11 @@
 export type Inputs = {
-  // NEW: capacity + expected attendance %
+
+  /** Clubless pays staff this % LESS than the artist facing bill rate.
+   * Example: 26.67 => pay = bill x (1-0.2667)
+   */
+  staffingDiscountPct: number; // e.g., 26.67 (%)
+
+    // NEW: capacity + expected attendance %
   maxOccupancy: number;        // e.g., 300
   attendancePercent: number;   // 0..100 (% who actually attend)
 

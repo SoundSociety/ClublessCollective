@@ -7,6 +7,9 @@ import type { Inputs } from './types';
 import confetti from 'canvas-confetti';
 
 const DEFAULTS: Inputs = {
+
+  staffingDiscountPct: 26.67, // (% less than artist rate)
+  
   maxOccupancy: 0,
   attendancePercent: 100,
 

@@ -97,13 +97,14 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
 
         {/* Staffing core */}
         <NumInput label="Event Hours" value={inputs.eventHours} onChange={(v) => setInputs({ eventHours: Math.max(0, v) })} step={1} />
-        <NumInput label="# Bartenders" value={inputs.numBartenders} onChange={(v) => setInputs({ numBartenders: Math.max(0, v) })} step={1} />
-        <NumInput label="# Security" value={inputs.numSecurity} onChange={(v) => setInputs({ numSecurity: Math.max(0, v) })} step={1} />
+        <NumInput label="No. of Bartenders/Caterers" value={inputs.numBartenders} onChange={(v) => setInputs({ numBartenders: Math.max(0, v) })} step={1} />
+        <NumInput label="No. of
+         Security" value={inputs.numSecurity} onChange={(v) => setInputs({ numSecurity: Math.max(0, v) })} step={1} />
 
         {/* Artist-facing bill rates + derived pay display */}
         <div className="md:col-span-1">
           <NumInput
-            label="Bartender Bill ($/hr)"
+            label="Amount Artist is charged for Bartender Bill ($/hr)"
             value={inputs.bartenderBill}
             onChange={(v) => setInputs({ bartenderBill: Math.max(0, v) })}
             step={0.01}
@@ -115,7 +116,7 @@ export default function InputsPanel({ inputs, setInputs }: Props) {
 
         <div className="md:col-span-1">
           <NumInput
-            label="Security Bill ($/hr)"
+            label="Amount Artist is charged for Security Bill ($/hr)"
             value={inputs.securityBill}
             onChange={(v) => setInputs({ securityBill: Math.max(0, v) })}
             step={0.01}
